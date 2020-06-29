@@ -80,22 +80,34 @@ fs.readFile(LIST_OF_CITIES, "utf8", (err, data) => {
 
             //объект для выбора лимита
             limitCase = {
-                'first': (cities) => { const filterCities = cities.splice(1); console.log("города", cities); return cities; },
-                'all': (cities) => { console.log("города", cities); return cities },
-                'last': (cities) => { console.log("города", cities); const filterCities = cities.splice(cities.length - 1); console.log(filterCities); return filterCities; }
+                'first': (cities) => { const filterCities = cities.splice(1); return cities; },
+                'all': (cities) => { return cities },
+                'last': (cities) => { const filterCities = cities.splice(cities.length - 1); return filterCities; },
             };
 
             //объект для выбора операции сравнения
             comparisonCase = {
                 '=': (cities) => { return cities.filter(function (values) { return values[this.cityQuery.field] == this.cityQuery.comparisonValue }, this); },
                 '>': (cities) => { return cities.filter(function (values) { return values[this.cityQuery.field] > this.cityQuery.comparisonValue }, this); },
-                '<': (cities) => { return cities.filter(function (values) { return values[this.cityQuery.field] < this.cityQuery.comparisonValue }, this); }
+                '<': (cities) => { return cities.filter(function (values) { return values[this.cityQuery.field] < this.cityQuery.comparisonValue }, this); },
             };
+
+            fields = ['city', 'region', 'number'];
+
+
 
             //если есть поле сравнение, то сравниваем, иначе просто ставим лимит
             try {
                 if (this.cityQuery.field != "") {
-                    cities = comparisonCase[this.cityQuery.comparison](cities);
+
+                    if (fields.indexOf(this.cityQuery.field) >= 0) {
+                        // console.log(fields.indexOf(this.cityQuery.field));
+                        cities = comparisonCase[this.cityQuery.comparison](cities);
+                    } else {
+                        console.log("Поле для сравнения указано неверно (могут быть number, region и city )");
+                        throw (err);
+                    }
+
                 }
                 cities = limitCase[this.cityQuery.limit](cities);
                 return cities;
@@ -111,8 +123,6 @@ fs.readFile(LIST_OF_CITIES, "utf8", (err, data) => {
     try {
         cityFilter.makeOutCommand(query);
         cities = cityFilter.performFilteging(cities);
-        console.log(cities);
-
 
         //Записываем в файл
 
@@ -122,6 +132,7 @@ fs.readFile(LIST_OF_CITIES, "utf8", (err, data) => {
                 throw (err);
             }
             console.log("Запись в файл завершена");
+            console.log(cities);
         });
 
     }
