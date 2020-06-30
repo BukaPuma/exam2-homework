@@ -68,7 +68,7 @@ fs.readFile(LIST_OF_CITIES, "utf8", (err, data) => {
                     this.cityQuery.limit = inputString.replace(regPattern2, '$1');
                 } else {
                     console.log("Команда написана неверно");
-                    throw error;
+                    throw err;
                 }
 
             }
@@ -99,13 +99,11 @@ fs.readFile(LIST_OF_CITIES, "utf8", (err, data) => {
             //если есть поле сравнение, то сравниваем, иначе просто ставим лимит
             try {
                 if (this.cityQuery.field != "") {
-
                     if (fields.indexOf(this.cityQuery.field) >= 0) {
-                        // console.log(fields.indexOf(this.cityQuery.field));
                         cities = comparisonCase[this.cityQuery.comparison](cities);
                     } else {
                         console.log("Поле для сравнения указано неверно (могут быть number, region и city )");
-                        throw (err);
+                        throw err;
                     }
 
                 }
@@ -114,7 +112,7 @@ fs.readFile(LIST_OF_CITIES, "utf8", (err, data) => {
             }
             catch (err) {
                 console.log("Ошибка фильтрации");
-                throw (err);
+                throw err;
             }
         }
     };
@@ -129,7 +127,7 @@ fs.readFile(LIST_OF_CITIES, "utf8", (err, data) => {
         fs.writeFile(LIST_OF_CITIES_OUTPUT, JSON.stringify(cities), (err) => {
             if (err) {
                 console.log("Не удалось осуществить запись в файл", "Ошибка", err);
-                throw (err);
+                throw err;
             }
             console.log("Запись в файл завершена");
             console.log(cities);
